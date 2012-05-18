@@ -4,6 +4,8 @@ package classes.game_objects
 	import classes.components.SpriteComponent;
 	import classes.components.UpdateComponent;
 	
+	import flash.geom.Point;
+	
 	import starling.display.Sprite;
 	
 	/**
@@ -47,7 +49,7 @@ package classes.game_objects
 		
 		public function getWidth():uint { return m_width; }
 		public function getHeight():uint { return m_height; }
-		public function getWorldToStageMap():WorldToStageMap { return m_worldToStageMap; }
+		
 		public function setWorldToStageMap(xi:Number, xj:Number, yi:Number, yj:Number):void
 		{
 			m_worldToStageMap = new WorldToStageMap(xi, xj, yi, yj);
@@ -67,6 +69,14 @@ package classes.game_objects
 		public function addSprite(sprite:Sprite):void
 		{
 			m_sprite.getSprite().addChild(sprite);
+		}
+		
+		public function getStagePosition(worldPosition:Point):Point
+		{
+			return new Point(
+				worldPosition.x * m_worldToStageMap.xi + worldPosition.y * m_worldToStageMap.yi,
+				worldPosition.x * m_worldToStageMap.xj + worldPosition.y * m_worldToStageMap.yj
+			);
 		}
 		
 		override public function dispose():Boolean
@@ -89,8 +99,21 @@ package classes.game_objects
  * */
 class WorldToStageMap
 {
-	public function WorldToStageMap(xi:Number, xj:Number, yi:Number, yj:Number)
+	private var m_xi:Number;
+	private var m_xj:Number;
+	private var m_yi:Number;
+	private var m_yj:Number;
+	
+	public function get xi():Number { return m_xi; }
+	public function get xj():Number { return m_xj; }
+	public function get yi():Number { return m_yi; }
+	public function get yj():Number { return m_yj; }
+	
+	public function WorldToStageMap(xi:Number = 1, xj:Number = 1, yi:Number = 1, yj:Number = 1)
 	{
-		
+		m_xi = xi;
+		m_xj = xj;
+		m_yi = yi;
+		m_yj = yj;
 	}
 }
