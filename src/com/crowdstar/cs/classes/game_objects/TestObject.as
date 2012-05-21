@@ -1,15 +1,15 @@
-package classes.game_objects
+package com.crowdstar.cs.classes.game_objects
 {
-	import classes.Game;
-	import classes.components.SpriteComponent;
-	import classes.components.UpdateComponent;
-	import classes.utils.CSUtilString;
+	import com.crowdstar.cs.classes.Game;
+	import com.crowdstar.cs.classes.components.SpriteComponent;
+	import com.crowdstar.cs.classes.components.UpdateComponent;
+	import com.crowdstar.cs.classes.utils.CSUtilString;
 	
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import classes.managers.AssetManager;
+	import com.crowdstar.cs.classes.managers.AssetManager;
 
 	public class TestObject extends GameObject
 	{

@@ -1,7 +1,7 @@
-package classes.components
+package com.crowdstar.cs.classes.components
 {
-	import classes.game_objects.GameObject;
-	import classes.game_objects.World;
+	import com.crowdstar.cs.classes.game_objects.GameObject;
+	import com.crowdstar.cs.classes.game_objects.World;
 	
 	import flash.geom.Point;
 	
@@ -19,7 +19,7 @@ package classes.components
 		
 		public function WorldObjectComponent(gameObject:GameObject, world:World, position:Point = null)
 		{
-			super(gameObject);
+			super(WorldObjectComponent, gameObject);
 			m_world = world;
 			m_position = (position) ? position : new Point(0,0);
 		}

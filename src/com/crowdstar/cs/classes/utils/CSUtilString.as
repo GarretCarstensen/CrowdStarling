@@ -1,4 +1,4 @@
-package classes.utils
+package com.crowdstar.cs.classes.utils
 {
 	public class CSUtilString
 	{

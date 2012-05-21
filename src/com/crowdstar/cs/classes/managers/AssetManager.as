@@ -1,6 +1,6 @@
-package classes.managers
+package com.crowdstar.cs.classes.managers
 {
-	import classes.Game;
+	import com.crowdstar.cs.classes.Game;
 	
 	import flash.display.Bitmap;
 	import flash.utils.Dictionary;

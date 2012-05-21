@@ -1,4 +1,4 @@
-package classes.game_objects
+package com.crowdstar.cs.classes.game_objects
 {
 	public class WorldTopDown extends World
 	{

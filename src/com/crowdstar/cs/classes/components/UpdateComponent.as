@@ -1,10 +1,10 @@
-package classes.components
+package com.crowdstar.cs.classes.components
 {
-	import classes.Game;
+	import com.crowdstar.cs.classes.Game;
 	
 	import flash.utils.Dictionary;
 	
-	import classes.game_objects.GameObject;
+	import com.crowdstar.cs.classes.game_objects.GameObject;
 	
 	public class UpdateComponent extends Component
 	{
@@ -14,7 +14,7 @@ package classes.components
 		
 		public function UpdateComponent(gameObject:GameObject, callback:Function = null, priority:int = 0)
 		{
-			super(gameObject);
+			super(UpdateComponent, gameObject);
 			
 			m_callback = callback;
 			m_priority = priority;

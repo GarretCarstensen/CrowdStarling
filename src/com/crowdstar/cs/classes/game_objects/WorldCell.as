@@ -1,4 +1,4 @@
-package classes.game_objects
+package com.crowdstar.cs.classes.game_objects
 {
 	
 	public class WorldCell extends GameObject
@@ -38,12 +38,12 @@ package classes.game_objects
 			}
 		}
 		
-		override public function dispose():Boolean
+		override public function dispose(disposeComponents:Boolean = true):Boolean
 		{
 			while(m_effects.length)
 			{
 				var effect:WorldCellEffect = m_effects.pop();
-				effect.dispose();
+				effect.dispose(true);
 			}
 			return true;
 		}

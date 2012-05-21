@@ -1,8 +1,8 @@
-package classes.game_objects
+package com.crowdstar.cs.classes.game_objects
 {
-	import classes.Game;
-	import classes.components.SpriteComponent;
-	import classes.components.UpdateComponent;
+	import com.crowdstar.cs.classes.Game;
+	import com.crowdstar.cs.classes.components.SpriteComponent;
+	import com.crowdstar.cs.classes.components.UpdateComponent;
 	
 	import flash.geom.Point;
 	
@@ -79,12 +79,12 @@ package classes.game_objects
 			);
 		}
 		
-		override public function dispose():Boolean
+		override public function dispose(disposeComponents:Boolean = true):Boolean
 		{
 			while(m_cells.length)
 			{
 				var cell:WorldCell = m_cells.pop();
-				cell.dispose();
+				cell.dispose(true);
 			}
 			return true;
 		}
