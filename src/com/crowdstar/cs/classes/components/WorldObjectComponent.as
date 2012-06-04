@@ -13,23 +13,79 @@ package com.crowdstar.cs.classes.components
 	 * */
 	public class WorldObjectComponent extends Component
 	{
+		// Essential positional properties
 		private var m_world:World;
-		private var m_position:Point;
+		private var m_x:Number;
+		private var m_y:Number;
+		
+		// Optional movement properties
+		/**Change in position to be applied.*/
+		private var m_velocityX:Number;
+		private var m_velocityY:Number;
+		
+		// Optional visual properties
+		/**Sprite who's position is determined by this world object component's world position.*/
 		private var m_sprite:Sprite;
 		
-		public function WorldObjectComponent(gameObject:GameObject, world:World, position:Point = null)
+		public function WorldObjectComponent(gameObject:GameObject, world:World, x:Number = 0, y:Number = 0)
 		{
 			super(WorldObjectComponent, gameObject);
 			m_world = world;
-			m_position = (position) ? position : new Point(0,0);
+			m_x = x;
+			m_y = y;
 		}
 		
-		public function setWorldPosition(position:Point):void
+		/**
+		 * Get the position of the world object component in world units.
+		 * */
+		public function getPosition():Point { return new Point(m_x, m_y); }
+		
+		/**
+		 * Set the position of the world object component in world units.
+		 * */
+		public function setPosition(position:Point):void
 		{
-			m_position = position;
+			m_x = position.x;
+			m_y = position.y;
 			updateSpritePosition();
 		}
 		
+		/**
+		 * Get the change in position to be applied.
+		 * */
+		public function getVelocity():Point { return new Point(m_velocityX, m_velocityY); }
+		
+		/**
+		 * Set the change in position to be applied.
+		 * */
+		public function setVelocity(velocity:Point):void
+		{
+			m_velocityX = velocity.x;
+			m_velocityY = velocity.y;
+		}
+		
+		/**
+		 * Change the position of this world object component by the current velocity.
+		 * */
+		public function applyVelocity():void
+		{
+			setPosition(new Point(m_x + m_velocityX, m_y + m_velocityY));
+		}
+		
+		/**
+		 * Adds each component of the given point to the corresponding component.
+		 * */
+		public function accelerate(acceleration:Point):void
+		{
+			m_velocityX += acceleration.x;
+			m_velocityY += acceleration.y;
+		}
+		
+		/**
+		 * Sets a sprite to be attached to this world object component. The stage
+		 * position of the attached sprite remains in sync with the corresponding
+		 * world position of this world object component.
+		 * */
 		public function attachSprite(sprite:Sprite):void
 		{
 			if (m_sprite && m_sprite.parent)
@@ -41,15 +97,17 @@ package com.crowdstar.cs.classes.components
 			updateSpritePosition();
 		}
 		
-		public function updateSpritePosition():void
+		public function updateSpritePosition():Boolean
 		{
 			if (m_sprite)
 			{
 				// Set sprite position
-				var stagePosition:Point = m_world.getStagePosition(m_position);
-				m_sprite.x = stagePosition.x;
-				m_sprite.y = stagePosition.y;
+				var positionInPixels:Point = m_world.getPositionInPixels(new Point(m_x,m_y));
+				m_sprite.x = positionInPixels.x;
+				m_sprite.y = positionInPixels.y;
+				return true;
 			}
+			return false;
 		}
 		
 		override public function dispose(removeFromGameObject:Boolean=true):Boolean

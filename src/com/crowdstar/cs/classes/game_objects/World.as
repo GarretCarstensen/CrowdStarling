@@ -17,42 +17,64 @@ package com.crowdstar.cs.classes.game_objects
 	 * */
 	public class World extends GameObject
 	{
+		// Cell grid
 		private var m_cells:Vector.<WorldCell>;
-		private var m_width:uint;
-		private var m_height:uint;
+		private var m_widthInCells:uint;
+		private var m_heightInCells:uint;
 		private var m_worldToStageMap:WorldToStageMap;
 		
-		private var m_update:UpdateComponent;
-		private var m_sprite:SpriteComponent;
+		// Components
+		private var m_updateCmp:UpdateComponent;
+		private var m_spriteCmp:SpriteComponent;
 		
-		public function World(width:uint = 1, height:uint = 1)
+		// Camera properties
+		/** WorldCamera used to display the world such that a certain world coordinate is centered on screen.*/
+		private var m_camera:WorldCamera;
+		
+		/**
+		 * Constructs a world object by creating a grid of cells. This grid begins
+		 * at a given "x" and "y" (world coordinates).  It contains a number of cells
+		 * equal to the given "widthInCells" in the horizontal direction, and a number of
+		 * cells equal to the "heightInCells" in the vertical direction.  The height and width
+		 * (world coordinates) of each cell is equall to the given "cellSize".
+		 * */
+		public function World(x:Number = 0, y:Number = 0, widthInCells:uint = 1, heightInCells:uint = 1, cellSize:Number = 1)
 		{
 			super();
 			
-			m_width = Math.max(width, 1);
-			m_height = Math.max(height, 1);
+			// Set the width and height in cells to at least 1
+			m_widthInCells = Math.max(widthInCells, 1);
+			m_heightInCells = Math.max(heightInCells, 1);
 			
+			// Construct the list of cells
 			m_cells = new Vector.<WorldCell>();
-			for (var y:int = 1; y <= height; y++)
+			for (var j:int = 0; j < heightInCells; j++)
 			{
-				for (var x:int = 1; x <= width; x++)
+				for (var i:int = 0; i < widthInCells; i++)
 				{
-					m_cells.push(new WorldCell(x,y));
+					m_cells.push(new WorldCell(this, x + i * cellSize, y + j * cellSize));
 				}
 			}
 			
-			m_update = new UpdateComponent(this, update);
-			m_sprite = new SpriteComponent(this);
+			m_updateCmp = new UpdateComponent(this, update);
+			m_spriteCmp = new SpriteComponent(this);
 			
-			getGame().setWorld(this);
+			Game.getInstance().setWorld(this);
 		}
 		
-		public function getWidth():uint { return m_width; }
-		public function getHeight():uint { return m_height; }
+		public function getWidthInCells():uint { return m_widthInCells; }
+		public function getHeightInCells():uint { return m_heightInCells; }
+		public function getCells():Vector.<WorldCell> { return m_cells; }
 		
 		public function setWorldToStageMap(xi:Number, xj:Number, yi:Number, yj:Number):void
 		{
 			m_worldToStageMap = new WorldToStageMap(xi, xj, yi, yj);
+		}
+		
+		public function getCamera():WorldCamera { return m_camera; }
+		public function setCamera(camera:WorldCamera):void
+		{
+			m_camera = camera;
 		}
 		
 		private function update(dt:int):Boolean
@@ -61,17 +83,28 @@ package com.crowdstar.cs.classes.game_objects
 			{
 				m_cells[i].update(dt);
 			}
+			
+			if (m_camera && m_camera.getTarget())
+			{
+				var cameraPosition:Point = m_camera.getWorldObjectCmp().getPosition();
+				var cameraPositionInPixels:Point = getPositionInPixels(cameraPosition);
+				var cameraRelativScreenPosition:Point = m_camera.getRelativeScreenPosition();
+				var worldSprite:Sprite = m_spriteCmp.getSprite();
+				worldSprite.x = worldSprite.stage.stageWidth * cameraRelativScreenPosition.x - cameraPositionInPixels.x;
+				worldSprite.y = worldSprite.stage.stageHeight * cameraRelativScreenPosition.y - cameraPositionInPixels.y;
+			}
+			
 			return true;
 		}
 		
-		public function getSprite():Sprite { return m_sprite.getSprite(); }
+		public function getSprite():Sprite { return m_spriteCmp.getSprite(); }
 		
 		public function addSprite(sprite:Sprite):void
 		{
-			m_sprite.getSprite().addChild(sprite);
+			m_spriteCmp.getSprite().addChild(sprite);
 		}
 		
-		public function getStagePosition(worldPosition:Point):Point
+		public function getPositionInPixels(worldPosition:Point):Point
 		{
 			return new Point(
 				worldPosition.x * m_worldToStageMap.xi + worldPosition.y * m_worldToStageMap.yi,
@@ -79,12 +112,41 @@ package com.crowdstar.cs.classes.game_objects
 			);
 		}
 		
+		public function getWorldPositionFromStagePosition(stagePosition:Point):Point
+		{
+			var x:Number = 0;
+			var y:Number = 0;
+			
+			if (m_worldToStageMap.xi != 0)
+			{
+				x += stagePosition.x / m_worldToStageMap.xi;
+			}
+			if (m_worldToStageMap.yi != 0)
+			{
+				x += stagePosition.y / m_worldToStageMap.yi;
+			}
+			if (m_worldToStageMap.xj != 0)
+			{
+				y += stagePosition.x / m_worldToStageMap.xj;
+			}
+			if (m_worldToStageMap.yj != 0)
+			{
+				y += stagePosition.y / m_worldToStageMap.yj;
+			}
+			return new Point(x, y);
+		}
+		
 		override public function dispose(disposeComponents:Boolean = true):Boolean
 		{
-			while(m_cells.length)
+			if (super.dispose(disposeComponents))
 			{
-				var cell:WorldCell = m_cells.pop();
-				cell.dispose(true);
+				while(m_cells.length)
+				{
+					var cell:WorldCell = m_cells.pop();
+					cell.dispose(true);
+				}
+				m_worldToStageMap = null;
+				m_camera = null;
 			}
 			return true;
 		}

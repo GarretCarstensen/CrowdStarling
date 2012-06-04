@@ -11,31 +11,25 @@ package com.crowdstar.cs.classes.game_objects
 	 * */
 	public class GameObject
 	{
-		/**CrowdStarling game to which this object belongs.*/
-		private var m_game:Game;
-		
 		/**List of components used to give functionality sets to this class.*/
 		private var m_components:Vector.<Component>;
 		
 		/**List of classes of each component for fast reference.*/
 		private var m_componentTypes:Vector.<Class>;
 		
+		/**Flag used to indicate whether the disposal function has been called on this game object.*/
+		private var m_isDisposed:Boolean = false;
+		
 		/**
 		 * Constructs a game object and initializes its components list.
 		 * An optional Game object may be passed to save calling the static Game.getInstance()
 		 * function in order to retrieve a reference to the current game.
 		 * */
-		public function GameObject(game:Game = null)
+		public function GameObject()
 		{
-			m_game = (game) ? game : Game.getInstance();
 			m_components = new Vector.<Component>();
 			m_componentTypes = new Vector.<Class>();
 		}
-		
-		/**
-		 * Returns this game object's reference to the singleton Game object.
-		 * */
-		protected function getGame():Game { return m_game; }
 		
 		/**
 		 * Returns this game object's list of components.
@@ -111,6 +105,12 @@ package com.crowdstar.cs.classes.game_objects
 		 * */
 		public function dispose(disposeComponents:Boolean = true):Boolean
 		{
+			if (m_isDisposed)
+			{
+				// Return failure if this game object is already disposed
+				return false;
+			}
+			
 			// Remove all components
 			while (m_components.length)
 			{
@@ -128,10 +128,8 @@ package com.crowdstar.cs.classes.game_objects
 				m_componentTypes.pop();
 			}
 			
-			// Null references
-			m_game = null;
-			
 			// Return success
+			m_isDisposed = true;
 			return true;
 		}
 	}

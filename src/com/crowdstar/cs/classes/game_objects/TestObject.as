@@ -3,7 +3,7 @@ package com.crowdstar.cs.classes.game_objects
 	import com.crowdstar.cs.classes.Game;
 	import com.crowdstar.cs.classes.components.SpriteComponent;
 	import com.crowdstar.cs.classes.components.UpdateComponent;
-	import com.crowdstar.cs.classes.utils.CSUtilString;
+	import com.crowdstar.cs.classes.utils.CSStringUtil;
 	
 	import starling.display.Image;
 	import starling.display.Sprite;
@@ -28,7 +28,7 @@ package com.crowdstar.cs.classes.game_objects
 			sprite.addEventListener(Event.ADDED_TO_STAGE, onSpriteAddedToStage);
 			getGame().getStage().addChild(sprite);
 			
-			var text:String = CSUtilString.getNumberString(.12, 1, 3, 4);
+			var text:String = CSStringUtil.getNumberString(.12, 1, 3, 4);
 			m_textField = new TextField(100, 30, text);
 			m_textField.x = 200;
 			m_textField.y = 50;

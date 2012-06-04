@@ -1,9 +1,10 @@
 package com.crowdstar.cs.classes.utils
 {
-	public class CSUtilString
+	public class CSStringUtil
 	{
-		public function CSUtilString()
+		public function CSStringUtil()
 		{
+			throw new Error("Do not construct static class CSStringUtil");
 		}
 		
 		public static function getNumberString(num:Number, minTensPlaces:uint = 1, minDecimalPlaces:uint = 0, maxDecimalPlaces:uint = int.MAX_VALUE):String

@@ -2,10 +2,10 @@ package com.crowdstar.cs.classes.game_objects
 {
 	public class WorldTopDown extends World
 	{
-		public function WorldTopDown(width:uint=1, height:uint=1)
+		public function WorldTopDown(x:Number = 0, y:Number = 0, widthInCells:uint=1, heightInCells:uint=1, cellSize:Number = 1, pixelsPerCell:Number = 32)
 		{
-			super(width, height);
-			setWorldToStageMap(32, 0, 0, 32);
+			super(x, y, widthInCells, heightInCells, cellSize);
+			setWorldToStageMap(pixelsPerCell, 0, 0, pixelsPerCell);
 		}
 	}
 }

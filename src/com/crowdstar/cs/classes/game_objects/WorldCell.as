@@ -1,20 +1,23 @@
 package com.crowdstar.cs.classes.game_objects
 {
+	import com.crowdstar.cs.classes.components.WorldObjectComponent;
+	
+	import flash.geom.Point;
 	
 	public class WorldCell extends GameObject
 	{
-		private var m_x:uint;
-		private var m_y:uint;
+		private var m_worldObjectCmp:WorldObjectComponent;
 		private var m_effects:Vector.<WorldCellEffect>;
 		
-		public function WorldCell(x:uint, y:uint)
+		public function WorldCell(world:World, x:Number = 0, y:Number = 0)
 		{
 			super();
 			
-			m_x = x;
-			m_y = y;
+			m_worldObjectCmp = new WorldObjectComponent(this, world, x, y);
 			m_effects = new Vector.<WorldCellEffect>();
 		}
+		
+		public function getWorldObjectCmp():WorldObjectComponent { return m_worldObjectCmp; }
 		
 		/**
 		 * World cells update via the update loop in the world class rather
@@ -40,12 +43,16 @@ package com.crowdstar.cs.classes.game_objects
 		
 		override public function dispose(disposeComponents:Boolean = true):Boolean
 		{
-			while(m_effects.length)
+			if (super.dispose(disposeComponents))
 			{
-				var effect:WorldCellEffect = m_effects.pop();
-				effect.dispose(true);
+				while(m_effects.length)
+				{
+					var effect:WorldCellEffect = m_effects.pop();
+					effect.dispose(true);
+				}
+				return true;
 			}
-			return true;
+			return false;
 		}
 	}
 }
