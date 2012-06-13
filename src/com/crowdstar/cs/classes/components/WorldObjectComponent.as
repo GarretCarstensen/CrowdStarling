@@ -39,11 +39,26 @@ package com.crowdstar.cs.classes.components
 		 * Get the position of the world object component in world units.
 		 * */
 		public function getPosition():Point { return new Point(m_x, m_y); }
+		public function getPositionX():Number { return m_x; }
+		public function getPositionY():Number { return m_y; }
 		
 		/**
 		 * Set the position of the world object component in world units.
 		 * */
-		public function setPosition(position:Point):void
+		public function setPosition(x:Number, y:Number):void
+		{
+			m_x = x;
+			m_y = y;
+		}
+		public function setPositionX(x:Number):void
+		{
+			m_x = x;
+		}
+		public function setPositionY(y:Number):void
+		{
+			m_y = y;
+		}
+		public function setPositionWithPoint(position:Point):void
 		{
 			m_x = position.x;
 			m_y = position.y;
@@ -54,11 +69,26 @@ package com.crowdstar.cs.classes.components
 		 * Get the change in position to be applied.
 		 * */
 		public function getVelocity():Point { return new Point(m_velocityX, m_velocityY); }
+		public function getVelocityX():Number { return m_velocityX; }
+		public function getVelocityY():Number { return m_velocityY; }
 		
 		/**
 		 * Set the change in position to be applied.
 		 * */
-		public function setVelocity(velocity:Point):void
+		public function setVelocity(x:Number, y:Number):void
+		{
+			m_velocityX = x;
+			m_velocityY = y;
+		}
+		public function setVelocityX(x:Number):void
+		{
+			m_velocityX = x;
+		}
+		public function setVelocityY(y:Number):void
+		{
+			m_velocityY = y;
+		}
+		public function setVelocityWithPoint(velocity:Point):void
 		{
 			m_velocityX = velocity.x;
 			m_velocityY = velocity.y;
@@ -69,7 +99,7 @@ package com.crowdstar.cs.classes.components
 		 * */
 		public function applyVelocity():void
 		{
-			setPosition(new Point(m_x + m_velocityX, m_y + m_velocityY));
+			setPosition(m_x + m_velocityX, m_y + m_velocityY);
 		}
 		
 		/**
@@ -102,7 +132,7 @@ package com.crowdstar.cs.classes.components
 			if (m_sprite)
 			{
 				// Set sprite position
-				var positionInPixels:Point = m_world.getPositionInPixels(new Point(m_x,m_y));
+				var positionInPixels:Point = m_world.getStagePosition(getPosition());
 				m_sprite.x = positionInPixels.x;
 				m_sprite.y = positionInPixels.y;
 				return true;

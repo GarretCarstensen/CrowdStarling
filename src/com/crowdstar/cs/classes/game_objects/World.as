@@ -4,6 +4,7 @@ package com.crowdstar.cs.classes.game_objects
 	import com.crowdstar.cs.classes.components.SpriteComponent;
 	import com.crowdstar.cs.classes.components.UpdateComponent;
 	
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
 	import starling.display.Sprite;
@@ -21,7 +22,10 @@ package com.crowdstar.cs.classes.game_objects
 		private var m_cells:Vector.<WorldCell>;
 		private var m_widthInCells:uint;
 		private var m_heightInCells:uint;
-		private var m_worldToStageMap:WorldToStageMap;
+		
+		/**This matrix determines how the world is rendered to the stage. The coordinate space of the world
+		 * is mapped to a 2 dimensional vector for each coordinate axis.*/
+		private var m_worldToStageTransform:Matrix;
 		
 		// Components
 		private var m_updateCmp:UpdateComponent;
@@ -66,9 +70,20 @@ package com.crowdstar.cs.classes.game_objects
 		public function getHeightInCells():uint { return m_heightInCells; }
 		public function getCells():Vector.<WorldCell> { return m_cells; }
 		
-		public function setWorldToStageMap(xi:Number, xj:Number, yi:Number, yj:Number):void
+		public function setWorldToStageTransform(a:Number, b:Number, c:Number, d:Number, tx:Number = 0, ty:Number = 0):void
 		{
-			m_worldToStageMap = new WorldToStageMap(xi, xj, yi, yj);
+			if (m_worldToStageTransform)
+			{
+				m_worldToStageTransform.setTo(a,b,c,d,tx,ty);
+			}
+			else
+			{
+				m_worldToStageTransform = new Matrix(a,b,c,d,tx,ty);
+			}
+		}
+		public function setWorldToStageTransformWithMatrix(transform:Matrix):void
+		{
+			m_worldToStageTransform = transform;
 		}
 		
 		public function getCamera():WorldCamera { return m_camera; }
@@ -87,7 +102,7 @@ package com.crowdstar.cs.classes.game_objects
 			if (m_camera && m_camera.getTarget())
 			{
 				var cameraPosition:Point = m_camera.getWorldObjectCmp().getPosition();
-				var cameraPositionInPixels:Point = getPositionInPixels(cameraPosition);
+				var cameraPositionInPixels:Point = getStagePosition(cameraPosition);
 				var cameraRelativScreenPosition:Point = m_camera.getRelativeScreenPosition();
 				var worldSprite:Sprite = m_spriteCmp.getSprite();
 				worldSprite.x = worldSprite.stage.stageWidth * cameraRelativScreenPosition.x - cameraPositionInPixels.x;
@@ -104,11 +119,11 @@ package com.crowdstar.cs.classes.game_objects
 			m_spriteCmp.getSprite().addChild(sprite);
 		}
 		
-		public function getPositionInPixels(worldPosition:Point):Point
+		public function getStagePosition(worldPosition:Point):Point
 		{
 			return new Point(
-				worldPosition.x * m_worldToStageMap.xi + worldPosition.y * m_worldToStageMap.yi,
-				worldPosition.x * m_worldToStageMap.xj + worldPosition.y * m_worldToStageMap.yj
+				worldPosition.x * m_worldToStageTransform.a + worldPosition.y * m_worldToStageTransform.b + m_worldToStageTransform.tx,
+				worldPosition.x * m_worldToStageTransform.c + worldPosition.y * m_worldToStageTransform.d + m_worldToStageTransform.ty
 			);
 		}
 		
@@ -116,23 +131,18 @@ package com.crowdstar.cs.classes.game_objects
 		{
 			var x:Number = 0;
 			var y:Number = 0;
+			if (a * d - b * c != 0)
+			{
+				var a:Number = m_worldToStageTransform.a;
+				var b:Number = m_worldToStageTransform.b;
+				var c:Number = m_worldToStageTransform.c;
+				var d:Number = m_worldToStageTransform.d;
+				var tx:Number = m_worldToStageTransform.tx;
+				var ty:Number = m_worldToStageTransform.ty;
+				x = (d * stagePosition.x - b * stagePosition.y) / (a * d - b * c);
+				y = (-c * stagePosition.x + a * stagePosition.y) / (a * d - b * c);
+			}
 			
-			if (m_worldToStageMap.xi != 0)
-			{
-				x += stagePosition.x / m_worldToStageMap.xi;
-			}
-			if (m_worldToStageMap.yi != 0)
-			{
-				x += stagePosition.y / m_worldToStageMap.yi;
-			}
-			if (m_worldToStageMap.xj != 0)
-			{
-				y += stagePosition.x / m_worldToStageMap.xj;
-			}
-			if (m_worldToStageMap.yj != 0)
-			{
-				y += stagePosition.y / m_worldToStageMap.yj;
-			}
 			return new Point(x, y);
 		}
 		
@@ -145,37 +155,10 @@ package com.crowdstar.cs.classes.game_objects
 					var cell:WorldCell = m_cells.pop();
 					cell.dispose(true);
 				}
-				m_worldToStageMap = null;
+				m_worldToStageTransform = null;
 				m_camera = null;
 			}
 			return true;
 		}
-	}
-}
-
-/**
- * This map determines how the world is rendered to the stage. The coordinate space of the world
- * is mapped to a 2 dimensional vector for each coordinate axis. For example, each unit in the
- * x direction in the world coordinate space is mapped to xi points horizontally on the stage and
- * xj units vertically on the stage.
- * */
-class WorldToStageMap
-{
-	private var m_xi:Number;
-	private var m_xj:Number;
-	private var m_yi:Number;
-	private var m_yj:Number;
-	
-	public function get xi():Number { return m_xi; }
-	public function get xj():Number { return m_xj; }
-	public function get yi():Number { return m_yi; }
-	public function get yj():Number { return m_yj; }
-	
-	public function WorldToStageMap(xi:Number = 1, xj:Number = 1, yi:Number = 1, yj:Number = 1)
-	{
-		m_xi = xi;
-		m_xj = xj;
-		m_yi = yi;
-		m_yj = yj;
 	}
 }

@@ -88,7 +88,7 @@ package com.crowdstar.cs.classes.game_objects
 		{
 			if (m_target)
 			{
-				m_worldObjectCmp.setPosition(m_target.getPosition());
+				m_worldObjectCmp.setPositionWithPoint(m_target.getPosition());
 			}
 		}
 		
